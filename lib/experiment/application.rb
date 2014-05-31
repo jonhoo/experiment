@@ -12,10 +12,14 @@ module Experiment
 			@repo = options[:repo]
 		end
 
-		def run(number)
+		def build
+			commit = @repo.lookup(@version["checkout"] || @config["checkout"])
+
 			pwd = Dir.pwd
-			Dir.chdir @config["repository"]
-			@repo.reset(@version["checkout"] || @config["checkout"], :hard)
+			Dir.chdir @wd
+			Dir.mkdir "source"
+			Dir.chdir "source"
+			Experiment::recreate_tree(@repo, commit)
 
 			if not @version["diffs"].nil?
 				for p in @version["diffs"] do
@@ -29,14 +33,17 @@ module Experiment
 			if system(@version["build"] || @config["build"]).nil?
 				raise "Build failed"
 			end
-			Dir.chdir pwd
 
+			Dir.chdir pwd
+		end
+
+		def run(number)
 			fork do
 				Dir.chdir @wd
 				Dir.mkdir "run-#{number}"
 				Dir.chdir "run-#{number}"
 				args = @version["arguments"] || @config["arguments"]
-				args[0] = @config["repository"] + "/" + args[0]
+				args[0] = @wd + "/source/" + args[0]
 
 				if fork.nil?
 					exec args[0], *args

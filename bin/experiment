@@ -32,6 +32,7 @@ command :run do |c|
 								      :config => config,
 								      :version => version,
 								      :repo => repo)
+			versions[vname].build
 		end
 
 		running = 0
