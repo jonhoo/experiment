@@ -31,7 +31,7 @@ First, define the parameters for your experiment in a directory with a
 	"arguments": [
 		"build/bin/myapp",
 		"-r",
-		"3"
+		"3",
 		"~/experimental-data.dat"
 	],
 	"versions": {
@@ -42,7 +42,7 @@ First, define the parameters for your experiment in a directory with a
 		"ten-unicorn": {
 			"diffs": [
 				"~/add-unicorns.patch",
-				"~/ten-unicorns.patch",
+				"~/ten-unicorns.patch"
 			]
 		},
 		"rainbows-unicorns": {
