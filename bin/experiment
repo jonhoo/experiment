@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+require 'experiment'
+
+program :name, 'experiment'
+program :version, Experiment::VERSION
+program :description, 'A tool for running concurrent multi-configuration experiments'
+
+command :run do |c|
+	c.syntax = 'experiment run [options]'
+	c.summary = 'Run the experiments outlined in experiment.json'
+	#c.description = ''
+	#c.example 'description', 'command example'
+	#c.option '--some-switch', 'Some switch that does something'
+	c.action do |args, options|
+		say "Hello world"
+		# Do something or c.when_called Experiment::Commands::Run
+	end
+end
+default_command :run
