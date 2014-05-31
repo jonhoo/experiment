@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'commander/import'
 require 'experiment'
+require 'rugged'
 
 program :name, 'experiment'
 program :version, Experiment::VERSION
@@ -21,8 +22,30 @@ command :run do |c|
 			raise ArgumentError.new er.message
 		end
 
-		puts config.inspect
-		say "Got config"
+		config["repository"]  = config["repository"].gsub("~", Dir.home)
+		repo = Rugged::Repository.new(config["repository"])
+
+		versions = {}
+		config["versions"].each do |vname, version|
+			Dir.mkdir vname
+			versions[vname] = Experiment::Application.new(:wd => Dir.pwd + "/" + vname,
+								      :config => config,
+								      :version => version,
+								      :repo => repo)
+		end
+
+		running = 0
+		for n in 0..config["iterations"] do
+			versions.each do |vname, a|
+				while running >= config["parallelism"]
+					sleep 1
+				end
+
+				a.run(n)
+				running += 1
+			end
+		end
+
 	end
 end
 default_command :run
