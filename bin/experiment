@@ -15,8 +15,14 @@ command :run do |c|
 	#c.example 'description', 'command example'
 	#c.option '--some-switch', 'Some switch that does something'
 	c.action do |args, options|
-		say "Hello world"
-		# Do something or c.when_called Experiment::Commands::Run
+		begin
+			config = Experiment::read_config Dir.pwd
+		rescue Exception => er
+			raise ArgumentError.new er.message
+		end
+
+		puts config.inspect
+		say "Got config"
 	end
 end
 default_command :run
