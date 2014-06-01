@@ -30,6 +30,7 @@ First, define the parameters for your experiment in a directory with a
 	"iterations": 10,
 	"parallelism": 4,
 	"build": "make -j8",
+	"keep-stdout": true,
 	"arguments": [
 		"build/bin/myapp",
 		"-r",

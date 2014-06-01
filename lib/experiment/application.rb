@@ -84,7 +84,9 @@ module Experiment
 
 			fork do
 				args[0] = @wd + "/source/" + args[0]
-				exec args[0], *args
+				exec args[0], *args,
+					:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
+					:err => "stderr.log"
 			end
 
 			Process.wait
