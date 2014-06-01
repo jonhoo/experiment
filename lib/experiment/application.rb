@@ -13,7 +13,7 @@ module Experiment
 		end
 
 		def build
-			commit = @repo.lookup(@version["checkout"] || @config["checkout"])
+			commit = @repo.rev_parse(@version["checkout"] || @config["checkout"])
 
 			pwd = Dir.pwd
 			Dir.chdir @wd
