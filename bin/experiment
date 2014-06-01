@@ -6,6 +6,7 @@ require 'ruby-progressbar'
 require 'experiment'
 require 'rugged'
 require 'thwait'
+require "colorize"
 
 program :name, 'experiment'
 program :version, Experiment::VERSION
@@ -47,6 +48,7 @@ command :run do |c|
 		running = 0
 		threads = []
 		twait = nil
+		puts "==> All versions ready, starting experiment".bold
 		p = ProgressBar.create :total => ops.count, :format => "Progress: [%B] %p%% %E "
 		for op in ops do
 			vname, a, n = *op
