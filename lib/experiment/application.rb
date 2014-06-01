@@ -24,7 +24,7 @@ module Experiment
 			if not @version["diffs"].nil?
 				for p in @version["diffs"] do
 					# git apply ...
-					if system("/usr/bin/patch", "-Np1", p).nil?
+					if system("/usr/bin/patch", "-Np1", "-i", p.gsub("~", Dir.home)).nil?
 						raise "Patch " + p + " could not be applied"
 					end
 				end
