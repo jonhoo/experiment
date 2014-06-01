@@ -36,22 +36,33 @@ command :run do |c|
 			versions[vname].build
 		end
 
+		ops = []
+		for n in 0..config["iterations"] do
+			versions.each do |vname, a|
+				ops << [vname, a, n]
+			end
+		end
+		ops << nil
+
 		running = 0
 		threads = []
 		twait = nil
-		for n in 0..config["iterations"] do
-			versions.each do |vname, a|
-				if running >= config["parallelism"]
-					t = twait.next_wait
-					threads.delete t
-				end
-
-				threads << Thread.new { a.run(n) }
-				twait = ThreadsWait.new *threads
-				running += 1
+		progress ops do |op|
+			if op.nil?
+				twait.all_waits
+				break
 			end
+
+			vname, a, n = *op
+			if running >= config["parallelism"]
+				t = twait.next_wait
+				threads.delete t
+			end
+
+			threads << Thread.new { a.run(n) }
+			twait = ThreadsWait.new *threads
+			running += 1
 		end
-		twait.all_waits
 	end
 end
 default_command :run
