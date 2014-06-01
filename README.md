@@ -15,8 +15,7 @@ version multiple times, possibly concurrently, and report back when it finishes,
 leaving you to do other things than wait for one experiment to finish before
 starting the next.
 
-**Note that this application is not yet finished. See issues #2 and #3 in
-particular.**
+**Note that this application is still pretty rough around the edges.**
 
 ## usage
 

@@ -4,6 +4,7 @@ require 'rubygems'
 require 'commander/import'
 require 'experiment'
 require 'rugged'
+require 'thwait'
 
 program :name, 'experiment'
 program :version, Experiment::VERSION
@@ -36,17 +37,21 @@ command :run do |c|
 		end
 
 		running = 0
+		threads = []
+		twait = nil
 		for n in 0..config["iterations"] do
 			versions.each do |vname, a|
-				while running >= config["parallelism"]
-					sleep 1
+				if running >= config["parallelism"]
+					t = twait.next_wait
+					threads.delete t
 				end
 
-				a.run(n)
+				threads << Thread.new { a.run(n) }
+				twait = ThreadsWait.new *threads
 				running += 1
 			end
 		end
-
+		twait.all_waits
 	end
 end
 default_command :run

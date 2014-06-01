@@ -38,21 +38,17 @@ module Experiment
 		end
 
 		def run(number)
+			Dir.chdir @wd
+			Dir.mkdir "run-#{number}"
+			Dir.chdir "run-#{number}"
+			args = @version["arguments"] || @config["arguments"]
+
 			fork do
-				Dir.chdir @wd
-				Dir.mkdir "run-#{number}"
-				Dir.chdir "run-#{number}"
-				args = @version["arguments"] || @config["arguments"]
 				args[0] = @wd + "/source/" + args[0]
-
-				if fork.nil?
-					exec args[0], *args
-				end
-				Process.wait
-
-				puts "#{@wd}##{number} completed"
-				# TODO: Tell someone we've finished
+				exec args[0], *args
 			end
+
+			Process.wait
 		end
 	end
 end
