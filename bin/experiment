@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'commander/import'
+require 'ruby-progressbar'
 require 'experiment'
 require 'rugged'
 require 'thwait'
@@ -42,20 +43,16 @@ command :run do |c|
 				ops << [vname, a, n]
 			end
 		end
-		ops << nil
 
 		running = 0
 		threads = []
 		twait = nil
-		progress ops do |op|
-			if op.nil?
-				twait.all_waits
-				break
-			end
-
+		p = ProgressBar.create :total => ops.count, :format => "Progress: [%B] %p%% %E "
+		for op in ops do
 			vname, a, n = *op
 			if running >= config["parallelism"]
 				t = twait.next_wait
+				p.increment
 				threads.delete t
 			end
 
@@ -63,6 +60,7 @@ command :run do |c|
 			twait = ThreadsWait.new *threads
 			running += 1
 		end
+		twait.all_waits { p.increment }
 	end
 end
 default_command :run

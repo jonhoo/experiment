@@ -15,5 +15,6 @@ Gem::Specification.new do |s|
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
 
   s.add_runtime_dependency 'commander', '~> 4.2'
+  s.add_runtime_dependency 'ruby-progressbar', '~> 1.5'
   s.add_runtime_dependency 'rugged', '~> 0.19'
 end
