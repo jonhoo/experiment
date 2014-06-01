@@ -40,7 +40,7 @@ command :run do |c|
 		ops = []
 		for n in 0..config["iterations"] do
 			versions.each do |vname, a|
-				ops << [vname, a, n]
+				ops << [vname, a, n+1]
 			end
 		end
 
@@ -56,7 +56,9 @@ command :run do |c|
 				threads.delete t
 			end
 
-			threads << Thread.new { a.run(n) }
+			threads << Thread.new(vname, a, n) do |vname, a, n|
+				a.run(n)
+			end
 			twait = ThreadsWait.new *threads
 			running += 1
 		end
