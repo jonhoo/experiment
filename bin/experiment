@@ -34,7 +34,7 @@ command :run do |c|
 								      :config => config,
 								      :version => version,
 								      :repo => repo)
-			versions[vname].build
+			versions[vname].build vname
 		end
 
 		ops = []

@@ -1,4 +1,5 @@
 require "digest"
+require "colorize"
 
 module Experiment
 	class Application
@@ -14,7 +15,7 @@ module Experiment
 			@repo = options[:repo]
 		end
 
-		def build
+		def build(vname)
 			commit = @repo.rev_parse(@version["checkout"] || @config["checkout"])
 
 			pwd = Dir.pwd
@@ -48,20 +49,29 @@ module Experiment
 
 			Dir.mkdir "source"
 			Dir.chdir "source"
+
+			puts "==> Preparing source for version '#{vname}'".bold
+
+			puts " -> Recreating source tree".blue
 			Experiment::recreate_tree(@repo, commit)
 
 			if not @version["diffs"].nil?
+				puts " -> Applying patches".cyan
 				for p in @version["diffs"] do
 					# git apply ...
+					puts "  - #{p}".cyan
 					if system("/usr/bin/patch", "-Np1", "-i", p.gsub("~", Dir.home)).nil?
 						raise "Patch " + p + " could not be applied"
 					end
 				end
 			end
 
+			puts " -> Building application".yellow
 			if system(@version["build"] || @config["build"]).nil?
 				raise "Build failed"
 			end
+
+			puts " -> Application version ready".green
 
 			Dir.chdir pwd
 		end

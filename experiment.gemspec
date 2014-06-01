@@ -17,4 +17,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'commander', '~> 4.2'
   s.add_runtime_dependency 'ruby-progressbar', '~> 1.5'
   s.add_runtime_dependency 'rugged', '~> 0.19'
+  s.add_runtime_dependency 'colorize', '~> 0.7'
 end
