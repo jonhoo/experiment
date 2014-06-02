@@ -66,6 +66,22 @@ module Experiment
 				end
 			end
 
+			if File.exists? ".gitmodules"
+				puts " -> Initializing submodules".magenta
+				Rugged::Repository.init_at Dir.pwd
+
+				File.open(".gitmodules", 'rb').each do |line|
+					if line.match "path ="
+						p = line.gsub(/^\s*path = (.*)\s*$/, '\1')
+						next
+					end
+					if line.match "url ="
+						u = line.gsub(/^\s*url = (.*)\s*$/, '\1')
+						system("/usr/bin/git", "submodule", "add", u, p)
+					end
+				end
+			end
+
 			puts " -> Building application".yellow
 			if system(@version["build"] || @config["build"]).nil?
 				raise "Build failed"
