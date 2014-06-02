@@ -1,5 +1,6 @@
 require "digest"
 require "colorize"
+require "fileutils"
 
 module Experiment
 	class Application
@@ -87,6 +88,7 @@ module Experiment
 						system("/usr/bin/git", "submodule", "add", u, p)
 					end
 				end
+				FileUtils.rmtree [".git", ".gitmodules"]
 			end
 
 			puts " -> Building application".yellow
