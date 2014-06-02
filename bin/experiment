@@ -13,7 +13,7 @@ program :version, Experiment::VERSION
 program :description, 'A tool for running concurrent multi-configuration experiments'
 
 command :run do |c|
-	c.syntax = 'experiment run [options]'
+	c.syntax = 'experiment run'
 	c.summary = 'Run the experiments outlined in experiment.json'
 	#c.description = ''
 	#c.example 'description', 'command example'
@@ -67,4 +67,48 @@ command :run do |c|
 		twait.all_waits { p.increment }
 	end
 end
+
+command :init do |c|
+	c.syntax = 'experiment init'
+	c.summary = 'Create a fresh experiment.json'
+	#c.description = ''
+	#c.example 'description', 'command example'
+	#c.option '--some-switch', 'Some switch that does something'
+	c.action do |args, options|
+		file = "experiment.json"
+		description = ask 'Describe your experiment: '
+		repo = ask 'Where is the source repository located: '
+		checkout = ask 'What commit do you want to base the experiment on? '
+		iterations = ask 'Number of iterations for each version: '
+		parallelism = ask 'Number of parallel executions: '
+		versions = ask_for_array 'List the versions you wish to create: '
+		begin
+			File.open(file, 'w') do |f|
+				f.write <<-"..."
+{
+	"experiment": "#{description}",
+	"repository": "#{repo}",
+	"checkout": "#{checkout}",
+	"iterations": #{iterations},
+	"parallelism": #{parallelism},
+	"build": "make",
+	"arguments": [ ],
+	"versions": {
+				...
+				versions.each do |version|
+					f.write <<-"..."
+		"#{version}": {
+		}
+					...
+				end
+				f.write <<-"..."
+	}
+}
+				...
+			end
+		end
+		say "experiment.json created, now configure your versions and the execution command"
+	end
+end
+
 default_command :run
