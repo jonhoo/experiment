@@ -1,3 +1,5 @@
+require 'fileutils'
+
 # We essentially want the opposite of git_blob__create_from_paths
 module Experiment
 	def self.recreate_tree(repo, commit)
@@ -5,7 +7,7 @@ module Experiment
 
 		commit.tree.walk_trees do |root, e|
 			path = wd + "/" + root + "/" + e[:name]
-			Dir.mkdir path
+			FileUtils.mkdir_p path
 		end
 
 		commit.tree.walk_blobs do |root, e|
