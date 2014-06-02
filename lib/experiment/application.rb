@@ -7,12 +7,19 @@ module Experiment
 		@config
 		@version
 		@repo
+		@args
 
 		def initialize(options = {})
 			@wd = options[:wd]
 			@config = options[:config]
 			@version = options[:version]
 			@repo = options[:repo]
+			@args = (@version["arguments"] || @config["arguments"])
+			@args.each_with_index do |a, i|
+				if a.match(/^~\//)
+					@args[i] = Dir.home + a.gsub(/^~/, '')
+				end
+			end
 		end
 
 		def build(vname)
@@ -27,7 +34,7 @@ module Experiment
 			log.write "Committed at: #{commit.time}\n"
 
 			arghashes = []
-			(@version["arguments"] || @config["arguments"]).each_with_index do |a, i|
+			@args.each_with_index do |a, i|
 				if File.exists? a
 					arghashes << "\targ[#{i}] = #{a} has hash #{Digest::SHA2.file(a).hexdigest}\n"
 				end
@@ -40,7 +47,7 @@ module Experiment
 			if not @version["diffs"].nil?
 				for p in @version["diffs"] do
 					log.write "\n"
-					f = File.open p.gsub("~", Dir.home)
+					f = File.open File.expand_path p
 					log.write f.read
 					f.close
 				end
@@ -60,7 +67,7 @@ module Experiment
 				for p in @version["diffs"] do
 					# git apply ...
 					puts "  - #{p}".cyan
-					if system("/usr/bin/patch", "-Np1", "-i", p.gsub("~", Dir.home)).nil?
+					if system("/usr/bin/patch", "-Np1", "-i", File.expand_path(p)).nil?
 						raise "Patch " + p + " could not be applied"
 					end
 				end
@@ -96,11 +103,10 @@ module Experiment
 			Dir.chdir @wd
 			Dir.mkdir "run-#{number}"
 			Dir.chdir "run-#{number}"
-			args = @version["arguments"] || @config["arguments"]
 
 			fork do
-				args[0] = @wd + "/source/" + args[0]
-				exec args[0], *args,
+				@args[0] = @wd + "/source/" + @args[0]
+				exec @args[0], *@args,
 					:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
 					:err => "stderr.log"
 			end
