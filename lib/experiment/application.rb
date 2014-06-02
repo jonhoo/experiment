@@ -15,12 +15,13 @@ module Experiment
 			@config = options[:config]
 			@version = options[:version]
 			@repo = options[:repo]
-			@args = (@version["arguments"] || @config["arguments"])
+			@args = (@version["arguments"] || @config["arguments"]).dup
 			@args.each_with_index do |a, i|
 				if a.match(/^~\//)
 					@args[i] = Dir.home + a.gsub(/^~/, '')
 				end
 			end
+			@args[0] = @wd + "/source/" + @args[0]
 		end
 
 		def build(vname)
@@ -106,14 +107,9 @@ module Experiment
 			Dir.mkdir "run-#{number}"
 			Dir.chdir "run-#{number}"
 
-			fork do
-				@args[0] = @wd + "/source/" + @args[0]
-				exec @args[0], *@args,
-					:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
-					:err => "stderr.log"
-			end
-
-			Process.wait
+			system(*@args,
+				:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
+				:err => "stderr.log")
 		end
 	end
 end
