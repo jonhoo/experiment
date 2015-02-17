@@ -39,9 +39,9 @@ command :run do |c|
 		end
 
 		ops = []
-		for n in 0..config["iterations"] do
+		for n in 1..config["iterations"] do
 			versions.each do |vname, a|
-				ops << [vname, a, n+1]
+				ops << [vname, a, n]
 			end
 		end
 
