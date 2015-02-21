@@ -16,9 +16,7 @@ program :description, 'A tool for running concurrent multi-configuration experim
 command :run do |c|
 	c.syntax = 'experiment run'
 	c.summary = 'Run the experiments outlined in experiment.json'
-	#c.description = ''
-	#c.example 'description', 'command example'
-	#c.option '--some-switch', 'Some switch that does something'
+	c.option '-r', '--repository FILE', String, 'override location of source code'
 	c.action do |args, options|
 		begin
 			config = Experiment::read_config Dir.pwd
@@ -26,8 +24,9 @@ command :run do |c|
 			raise ArgumentError.new er.message
 		end
 
-		config["repository"]  = config["repository"].gsub("~", Dir.home)
-		repo = Rugged::Repository.new(config["repository"])
+		repository = (options.repository ||
+					  config["repository"].gsub("~", Dir.home))
+		repo = Rugged::Repository.new(repository)
 
 		# Create list of versions, organized by build
 		build_versions = Hash.new { |hash,key| hash[key] = {} }
