@@ -3,6 +3,17 @@ require "colorize"
 require "fileutils"
 
 module Experiment
+	# Substitute variables into s in the manner of environment variables. If
+	# var => val in variables, then $var and ${var} will be replaced by val in
+	# s. $key will be unaffected if key is not in variables, unlike shell
+	# environment variable substitution.
+	def self.substitute(s, variables)
+		s.gsub(/\$([a-zA-Z_]+[a-zA-Z0-9_]*)|\$\{(.+?)\}/) {
+			key = $1 || $2
+			variables.fetch(key, $&)
+		}
+	end
+
 	class Build
 		attr_reader :command
 		attr_reader :checkout
@@ -114,12 +125,13 @@ module Experiment
 			@version = options[:version]
 			@repo = options[:repo]
 			@args = (@version["arguments"] || @config["arguments"]).dup
-			@args.each_with_index do |a, i|
-				if a.match(/^~\//)
-					@args[i] = Dir.home + a.gsub(/^~/, '')
-				end
-			end
-			@args[0] = @wd + "/source/" + @args[0]
+			@args[0].sub!(/^~/, Dir.home)
+			@args.map! {|arg|
+				Experiment.substitute(
+					arg,
+					{"SRC" => File.join(@wd, "source")}
+				)
+			}
 			@build = Build.new(@repo,
 							   @version["build"] || @config["build"],
 							   @version["checkout"] || @config["checkout"],
@@ -139,6 +151,7 @@ module Experiment
 			# Record an experiment log with the hashes of any input files
 			# passed on the command line.
 			log = File.open "experiment.log", "w"
+			log.write "Running #{@args}\n"
 			arghashes = []
 			@args.each_with_index do |a, i|
 				if File.file? a
