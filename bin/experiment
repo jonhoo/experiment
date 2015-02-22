@@ -73,7 +73,11 @@ command :run do |c|
 			end
 
 			threads << Thread.new(vname, a, n) do |vname, a, n|
-				a.run(n)
+				begin
+					a.run(n)
+				rescue Exception => er
+					STDERR.puts "internal error while running version #{vname}: #{er}"
+				end
 			end
 			twait = ThreadsWait.new *threads
 			running += 1
