@@ -11,7 +11,9 @@ Gem::Specification.new do |s|
   s.email       = 'jon@thesquareplanet.com'
   s.homepage    = 'https://github.com/jonhoo/experiment'
 
-  s.executables   = `ls bin`.split("\n").map{ |f| File.basename(f) }
+  s.files        = Dir.glob("{bin,lib}/**/*") + %w(LICENSE README.md)
+  s.executables  = ['experiment']
+  s.require_path = 'lib'
 
   s.add_runtime_dependency 'commander', '~> 4.2'
   s.add_runtime_dependency 'ruby-progressbar', '~> 1.5'
