@@ -1,6 +1,6 @@
 # Maintainer: Jon Gjengset <jon@tsp.io>
 _gemname=experiment
-pkgname=$_gemname-git
+pkgname=$_gemname
 pkgver=0.1.2
 pkgrel=1
 pkgdesc="A tool for running concurrent multi-configuration experiments"
