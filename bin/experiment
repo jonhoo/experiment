@@ -7,6 +7,7 @@ require 'experiment'
 require 'rugged'
 require 'thwait'
 require "colorize"
+require 'tmpdir'
 
 program :name, 'experiment'
 program :version, Experiment::VERSION
@@ -28,20 +29,33 @@ command :run do |c|
 		config["repository"]  = config["repository"].gsub("~", Dir.home)
 		repo = Rugged::Repository.new(config["repository"])
 
-		versions = {}
+		# Create list of versions, organized by build
+		build_versions = Hash.new { |hash,key| hash[key] = {} }
 		config["versions"].each do |vname, version|
-			Dir.mkdir vname
-			versions[vname] = Experiment::Application.new(:wd => Dir.pwd + "/" + vname,
+			app = Experiment::Application.new(:wd => Dir.pwd + "/" + vname,
 								      :config => config,
 								      :version => version,
 								      :repo => repo)
-			versions[vname].build vname
+			build_versions[app.build][vname] = app
+		end
+
+		# Build each distinct build, then use it to initialize the relevant
+		# versions.
+		build_versions.each do |build, versions|
+			Dir.mktmpdir do |build_dir|
+				build.build(build_dir)
+				versions.each do |vname, a|
+					a.copy_build(vname, build_dir)
+				end
+			end
 		end
 
 		ops = []
 		for n in 1..config["iterations"] do
-			versions.each do |vname, a|
-				ops << [vname, a, n]
+			build_versions.values.each do |versions|
+				versions.each do |vname, a|
+					ops << [vname, a, n]
+				end
 			end
 		end
 
