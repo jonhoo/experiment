@@ -141,7 +141,7 @@ module Experiment
 			log = File.open "experiment.log", "w"
 			arghashes = []
 			@args.each_with_index do |a, i|
-				if File.exists? a
+				if File.file? a
 					arghashes << "\targ[#{i}] = #{a} has hash #{Digest::SHA2.file(a).hexdigest}\n"
 				end
 			end
