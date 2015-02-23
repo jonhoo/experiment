@@ -32,7 +32,7 @@ First, define the parameters for your experiment in a directory with a
 	"build": "make -j8",
 	"keep-stdout": true,
 	"arguments": [
-		"build/bin/myapp",
+		"$SRC/build/bin/myapp",
 		"-r",
 		"3",
 		"~/experimental-data.dat"
