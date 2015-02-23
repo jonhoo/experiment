@@ -1,7 +1,7 @@
 # Maintainer: Jon Gjengset <jon@tsp.io>
 _gemname=experiment
 pkgname=$_gemname-git
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="A tool for running concurrent multi-configuration experiments"
 arch=(any)
@@ -9,8 +9,8 @@ url="https://github.com/jonhoo/experiment"
 license=('GPL')
 depends=(ruby) # Full dependency information is available in the yaml specification
 makedepends=(rubygems)
-source=(https://github.com/jonhoo/$_gemname/archive/v${pkgver}.tar.gz)
-md5sums=('2f23320660d713b55f589a060eb38b33')
+source=($_gemname-${pkgver}.tar.gz::https://github.com/jonhoo/$_gemname/archive/v${pkgver}.tar.gz)
+md5sums=('f371bd415927e66dac0a79e1dff0e0ee')
 
 build() {
   cd "$srcdir/${_gemname}-$pkgver"
