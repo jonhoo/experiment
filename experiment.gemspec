@@ -11,8 +11,7 @@ Gem::Specification.new do |s|
   s.email       = 'jon@thesquareplanet.com'
   s.homepage    = 'https://github.com/jonhoo/experiment'
 
-  s.files         = `git ls-files`.split("\n")
-  s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
+  s.executables   = `ls bin`.split("\n").map{ |f| File.basename(f) }
 
   s.add_runtime_dependency 'commander', '~> 4.2'
   s.add_runtime_dependency 'ruby-progressbar', '~> 1.5'
