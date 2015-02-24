@@ -1,4 +1,5 @@
 require 'experiment/version'
 require 'experiment/config'
+require 'experiment/build'
 require 'experiment/application'
 require 'experiment/recreate_tree'
