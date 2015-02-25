@@ -58,6 +58,11 @@ command :run do |c|
 			end
 		end
 
+		ops.sort_by! { |op|
+			# Sort first by vname, then by run number.
+			[op[0], op[2]]
+		}
+
 		running = 0
 		threads = []
 		twait = nil
