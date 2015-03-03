@@ -17,11 +17,20 @@ command :run do |c|
 	c.syntax = 'experiment run'
 	c.summary = 'Run the experiments outlined in experiment.json'
 	c.option '-r', '--repository FILE', String, 'override location of source code'
+	c.option '-o', '--output DIR', String, 'override location of experiment output'
 	c.action do |args, options|
 		begin
 			config = Experiment::read_config Dir.pwd
 		rescue Exception => er
 			raise ArgumentError.new er.message
+		end
+
+		if options.output
+			if File.exist? options.output
+				raise ArgumentError.new "Output directory #{options.output} already exists; exiting."
+			end
+			FileUtils.mkdir_p options.output
+			Dir.chdir options.output
 		end
 
 		repository = (options.repository ||
