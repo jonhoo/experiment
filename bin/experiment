@@ -60,17 +60,19 @@ command :run do |c|
 
 		ops = []
 		for n in 1..config["iterations"] do
+			iops = []
 			build_versions.values.each do |versions|
 				versions.each do |vname, a|
-					ops << [vname, a, n]
+					iops << [vname, a, n]
 				end
 			end
+			# to improve time estimation, run versions in random
+			# order while ensuring all versions within an iteration
+			# are run before the next iteration is started.
+			iops.shuffle!
+			ops << iops
 		end
-
-		ops.sort_by! { |op|
-			# Sort first by vname, then by run number.
-			[op[0], op[2]]
-		}
+		ops.flatten! 1
 
 		running = 0
 		threads = []
