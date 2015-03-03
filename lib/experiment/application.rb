@@ -52,11 +52,17 @@ module Experiment
 				log.write "File argument hashes:\n"
 				arghashes.each { |e| log.write e }
 			end
-			log.close
 
+			start = Time.now
+			log.write start.strftime("Started at %s (%FT%T%:z)\n")
 			system(*@args,
 				:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
 				:err => "stderr.log")
+			finish = Time.now
+			log.write finish.strftime("Finished at %s (%FT%T%:z)\n")
+			duration = finish - start
+			log.write "Took #{duration}s\n"
+			log.close
 		end
 	end
 end
