@@ -40,3 +40,4 @@ build/
 /pkg
 /*.xz
 /*.gz
+/test
