@@ -35,6 +35,9 @@ module Experiment
 
 		def run(number)
 			Dir.chdir @wd
+			Dir.mkdir "run-#{number}"
+			Dir.chdir "run-#{number}"
+
 			# Record an experiment log with the hashes of any input files
 			# passed on the command line.
 			log = File.open "experiment.log", "w"
@@ -50,9 +53,6 @@ module Experiment
 				arghashes.each { |e| log.write e }
 			end
 			log.close
-
-			Dir.mkdir "run-#{number}"
-			Dir.chdir "run-#{number}"
 
 			system(*@args,
 				:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
