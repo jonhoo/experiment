@@ -55,9 +55,19 @@ module Experiment
 
 			start = Time.now
 			log.write start.strftime("Started at %s (%FT%T%:z)\n")
-			system(*@args,
+			pid = spawn(*@args,
 				:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
 				:err => "stderr.log")
+
+			Fiber.new {
+				while Thread.current.thread_variable_get(:proceed)
+					Kernel.sleep 1
+				end
+				Process.kill("TERM", pid)
+			}
+			Process.waitpid pid
+			Thread.current.thread_variable_set(:proceed, false)
+
 			finish = Time.now
 			log.write finish.strftime("Finished at %s (%FT%T%:z)\n")
 			duration = finish - start

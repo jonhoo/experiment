@@ -79,7 +79,19 @@ command :run do |c|
 		twait = nil
 		puts "==> All versions ready, starting experiment".bold
 		p = ProgressBar.create :total => ops.count, :format => "Progress: [%B] %p%% %E "
+
+		proceed = true
+		Signal.trap("TERM") do
+			proceed = false
+			threads.each_do do |t|
+				t.thread_variable_set(:proceed, false)
+			end
+		end
 		for op in ops do
+			if not proceed
+				break
+			end
+
 			vname, a, n = *op
 			if running >= config["parallelism"]
 				t = twait.next_wait
@@ -89,6 +101,7 @@ command :run do |c|
 
 			threads << Thread.new(vname, a, n) do |vname, a, n|
 				begin
+					Thread.current.thread_variable_set(:proceed, true)
 					a.run(n)
 				rescue Exception => er
 					STDERR.puts "internal error while running version #{vname}: #{er}"
@@ -98,6 +111,9 @@ command :run do |c|
 			running += 1
 		end
 		twait.all_waits { p.increment }
+		if not proceed
+			puts "==> Stopped experimenting after user interrupt".bold
+		end
 	end
 end
 
