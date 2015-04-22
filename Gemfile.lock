@@ -14,9 +14,12 @@ GEM
     commander (4.3.3)
       highline (~> 1.7.2)
     highline (1.7.2)
+    power_assert (0.2.3)
     rake (10.4.2)
     ruby-progressbar (1.7.5)
     rugged (0.21.4)
+    test-unit (3.0.9)
+      power_assert
 
 PLATFORMS
   ruby
@@ -24,3 +27,4 @@ PLATFORMS
 DEPENDENCIES
   experiment!
   rake
+  test-unit
