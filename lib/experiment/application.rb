@@ -3,6 +3,14 @@ require "colorize"
 require "fileutils"
 
 module Experiment
+	@@proceed = true
+	def self.stop
+		@@proceed = false
+	end
+	def self.stopped
+		@@proceed == false
+	end
+
 	class Application
 		attr_reader :build
 
@@ -59,14 +67,15 @@ module Experiment
 				:out => @config["keep-stdout"] ? "stdout.log" : "/dev/null",
 				:err => "stderr.log")
 
-			Fiber.new {
-				while Thread.current.thread_variable_get(:proceed)
+
+			t = Thread.new() do
+				while not Experiment.stopped
 					Kernel.sleep 1
 				end
 				Process.kill("TERM", pid)
-			}
+			end
 			Process.waitpid pid
-			Thread.current.thread_variable_set(:proceed, false)
+			t.terminate
 
 			finish = Time.now
 			log.write finish.strftime("Finished at %s (%FT%T%:z)\n")

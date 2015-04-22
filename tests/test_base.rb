@@ -1,5 +1,6 @@
 require "test/unit"
 require 'rugged'
+require 'tmpdir'
 require 'json'
 
 class ExperimentTestCase < Test::Unit::TestCase
@@ -61,10 +62,14 @@ eos
 			f.write(JSON.generate(@e))
 		end
 
+		exp = File.absolute_path File.join(File.dirname(__FILE__), "../bin/experiment")
 		here = Dir.pwd
 		Dir.chdir dir
-		r = Kernel.system(File.join(File.dirname(__FILE__), "../bin/experiment"), "--output", File.join(dir, "out"), *args, :out=>"/dev/null")
+		r = Kernel.system(exp, "--trace", "--output", File.join(dir, "out"), *args, :out=>"/dev/null")
 		Dir.chdir here
+		if r == nil
+			puts $?
+		end
 		return r
 	end
 
