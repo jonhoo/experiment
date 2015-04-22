@@ -1,0 +1,26 @@
+PATH
+  remote: .
+  specs:
+    experiment (0.2.0)
+      colorize (~> 0.7)
+      commander (~> 4.2)
+      ruby-progressbar (~> 1.5)
+      rugged (~> 0.19)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    colorize (0.7.7)
+    commander (4.3.3)
+      highline (~> 1.7.2)
+    highline (1.7.2)
+    rake (10.4.2)
+    ruby-progressbar (1.7.5)
+    rugged (0.21.4)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  experiment!
+  rake
