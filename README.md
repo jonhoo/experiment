@@ -1,4 +1,5 @@
 # experiment
+[![Build Status](https://travis-ci.org/jonhoo/experiment.svg?branch=master)](https://travis-ci.org/jonhoo/experiment)
 
 A tool for running concurrent multi-configuration experiments. Quite often,
 we need to run different versions of an application to determine the effect of a
