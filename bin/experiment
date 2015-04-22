@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'commander/import'
 require 'ruby-progressbar'
-require 'experiment'
+require_relative '../lib/experiment'
 require 'rugged'
 require 'thwait'
 require "colorize"
