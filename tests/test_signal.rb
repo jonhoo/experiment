@@ -1,3 +1,4 @@
+require_relative './test_base'
 require 'experiment'
 require 'test/unit'
 require 'tmpdir'
@@ -17,9 +18,10 @@ class TestSignal < ExperimentTestCase
 					f.write(JSON.generate(@e))
 				end
 
-				here = Dir.pwd
+				here = File.absolute_path Dir.pwd
+				bin = File.absolute_path File.join(File.dirname(__FILE__), "../bin/experiment")
 				Dir.chdir d
-				pid = Kernel.spawn(File.join(File.dirname(__FILE__), "../bin/experiment"), "--trace", "--output", File.join(d, "out"), :out => "/dev/null")
+				pid = Kernel.spawn(bin, "--trace", "--output", File.join(d, "out"), :out => "/dev/null")
 				Dir.chdir here
 
 				Kernel.sleep 1

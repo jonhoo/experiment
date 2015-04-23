@@ -1,3 +1,4 @@
+require_relative './test_base'
 require 'experiment'
 require 'test/unit'
 require 'tmpdir'
