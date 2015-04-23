@@ -21,7 +21,7 @@ class TestSignal < ExperimentTestCase
 				here = File.absolute_path Dir.pwd
 				bin = File.absolute_path File.join(File.dirname(__FILE__), "../bin/experiment")
 				Dir.chdir d
-				pid = Kernel.spawn(bin, "--trace", "--output", File.join(d, "out"), :out => "/dev/null")
+				pid = Kernel.spawn(bin, "--trace", "--output", File.join(d, "out"), :out => "/dev/null", :err => "/dev/null")
 				Dir.chdir here
 
 				Kernel.sleep 1

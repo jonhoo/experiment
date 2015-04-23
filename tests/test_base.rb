@@ -67,7 +67,7 @@ eos
 		exp = File.absolute_path File.join(File.dirname(__FILE__), "../bin/experiment")
 		here = Dir.pwd
 		Dir.chdir dir
-		r = Kernel.system(exp, "--trace", "--output", File.join(dir, "out"), *args, :out=>"/dev/null")
+		r = Kernel.system(exp, "--trace", "--output", File.join(dir, "out"), *args, :out=>File.join(dir, "stdout.log"), :err=>File.join(dir, "stderr.log"))
 		Dir.chdir here
 		if r == nil
 			puts $?

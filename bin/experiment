@@ -49,23 +49,43 @@ command :run do |c|
 
 		# Build each distinct build, then use it to initialize the relevant
 		# versions.
+		bad = []
 		build_versions.each do |build, versions|
-			Dir.mktmpdir do |build_dir|
-				build.build(build_dir)
-				versions.each do |vname, a|
-					a.copy_build(vname, build_dir)
+			begin
+				Dir.mktmpdir do |build_dir|
+					build.build(build_dir)
+					versions.each do |vname, a|
+						a.copy_build(vname, build_dir)
+					end
 				end
+			rescue Exception => e
+				STDERR.puts sprintf(" -> %s failed!", build).red
+				bad.push build
 			end
+		end
+
+		if bad.length == build_versions.length
+			STDERR.puts sprintf("==> ERROR: no buildable version found!").red.bold
+			exit 1
 		end
 
 		ops = []
 		for n in 1..config["iterations"] do
 			iops = []
-			build_versions.values.each do |versions|
+			build_versions.each do |build, versions|
+				if bad.include? build
+					if n == 1
+						versions.each do |vname, a|
+							STDERR.puts sprintf("==> WARNING: ignoring version with failed build: %s", vname).yellow.bold
+						end
+					end
+					next
+				end
 				versions.each do |vname, a|
 					iops << [vname, a, n]
 				end
 			end
+
 			# to improve time estimation, run versions in random
 			# order while ensuring all versions within an iteration
 			# are run before the next iteration is started.
@@ -77,7 +97,7 @@ command :run do |c|
 		running = 0
 		threads = []
 		twait = nil
-		puts "==> All versions ready, starting experiment".bold
+		puts "==> Versions ready, starting experiment".bold
 		p = ProgressBar.create :total => ops.count, :format => "Progress: [%B] %p%% %E "
 
 		Signal.trap("TERM") do
@@ -108,7 +128,7 @@ command :run do |c|
 				begin
 					a.run(n)
 				rescue Exception => er
-					STDERR.puts "internal error while running version #{vname}: #{er}"
+					STDERR.puts sprintf("\n -> Failed to run version %s: %s", vname, er).red.bold
 				end
 			end
 			twait = ThreadsWait.new *threads

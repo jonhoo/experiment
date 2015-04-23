@@ -74,14 +74,22 @@ module Experiment
 				end
 				Process.kill("TERM", pid)
 			end
-			Process.waitpid pid
+			_, res = Process.waitpid2 pid
 			t.terminate
 
 			finish = Time.now
-			log.write finish.strftime("Finished at %s (%FT%T%:z)\n")
+			if res.success?
+				log.write finish.strftime("Finished at %s (%FT%T%:z)\n")
+			else
+				log.write sprintf(finish.strftime("Failed with %%s at %s (%FT%T%:z)\n"), res)
+			end
 			duration = finish - start
 			log.write "Took #{duration}s\n"
 			log.close
+
+			if not res.success?
+				raise "process failed with #{res}"
+			end
 		end
 	end
 end

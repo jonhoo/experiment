@@ -60,6 +60,7 @@ module Experiment
 					# git apply ...
 					puts "  - #{p}".cyan
 					if system("/usr/bin/patch", "-Np1", "-i", File.expand_path(p)).nil?
+						Dir.chdir pwd
 						raise "Patch " + p + " could not be applied"
 					end
 				end
@@ -83,8 +84,9 @@ module Experiment
 			end
 
 			puts " -> Building application".yellow
-			if system(@command).nil?
-				raise "Build failed"
+			if system(@command) != true
+				Dir.chdir pwd
+				raise $?
 			end
 
 			Dir.chdir pwd
