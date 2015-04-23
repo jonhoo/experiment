@@ -17,6 +17,8 @@ int main(int argc, char** argv) {
 	printf(\"slept %dms\\n\", atoi(argv[1]));
 }
 eos
+		@modc = @c
+
 		@e = {
 			"experiment"  => "Run tests",
 			"checkout"    => "master",
@@ -71,6 +73,26 @@ eos
 			puts $?
 		end
 		return r
+	end
+
+	def mkcommit(repo)
+		oid = repo.write @modc, :blob
+		index = repo.index
+		index.read_tree(repo.head.target.tree)
+		index.add(:path => "test.c", :oid => oid, :mode => 0100644)
+		File.open File.join(repo.workdir, "test.c"), "w" do |f|
+			f.write(@modc)
+		end
+
+		options = {}
+		options[:tree] = index.write_tree(repo)
+
+		options[:author] = { :email => "test@example.com", :name => 'Test Author', :time => Time.now }
+		options[:committer] = { :email => "test@example.com", :name => 'Test Author', :time => Time.now }
+		options[:message] ||= "Add test.c"
+options[:parents] = repo.empty? ? [] : [ repo.head.target ].compact
+		options[:update_ref] = 'HEAD'
+		return Rugged::Commit.create(repo, options)
 	end
 
 	def test_build
