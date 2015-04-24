@@ -8,10 +8,59 @@ require 'rugged'
 require 'thwait'
 require "colorize"
 require 'tmpdir'
+require 'bigdecimal'
+require 'csv'
+
+def to_numeric(anything)
+  num = BigDecimal.new(anything.to_s)
+  if num.frac == 0
+    num.to_i
+  else
+    num.to_f
+  end
+end
 
 program :name, 'experiment'
 program :version, Experiment::VERSION
 program :description, 'A tool for running concurrent multi-configuration experiments'
+
+def values(spec)
+	if spec =~ /^set\((.*)\)$/
+		return CSV.parse_line($1).map { |v| v.strip }
+	elsif spec =~ /^range\((.*)\)$/
+		args = $1.split(/\s*,\s*/).map { |v| to_numeric(v.strip) }
+		values = []
+		i = args[0]
+		while i < args[1]
+			values.push i
+			i += (args.length > 2 ? args[2] : 1)
+		end
+		return values
+	end
+end
+
+def replace(vname, template, parameters)
+	r = Proc.new { |x|
+		x = x.gsub(/(?<!\\)\$(\w+)/) {|m| parameters.include?($1) ? parameters[$1] : $&}
+		x = x.gsub(/(?<!\\)\${(.*?)}/) {|m| parameters.include?($1) ? parameters[$1] : $&}
+		x
+	}
+
+	version = {}
+	template.each do |k, v|
+		if k == "vary"
+			next
+		end
+		if v.is_a? String
+			version[k] = r.call(v)
+		elsif v.is_a? Array
+			version[k] = v.map { |x| r.call(x) }
+		else
+			version[k] = v
+		end
+	end
+	return [r.call(vname), version]
+end
 
 command :run do |c|
 	c.syntax = 'experiment run'
@@ -37,9 +86,35 @@ command :run do |c|
 					  config["repository"].gsub("~", Dir.home))
 		repo = Rugged::Repository.new(repository)
 
+		# Expand version templates
+		all_versions = {}
+		config["versions"].each do |vname, template|
+			versions = []
+			if not template.include? "vary"
+				versions.push [vname, template]
+			else
+				fields = []
+				vals = []
+				template["vary"].each do |field, spec|
+					fields.push field
+					vals.push values(spec)
+				end
+				vals = [nil].product *vals
+				vals.each do |parameters|
+					parameters = Hash[fields.zip parameters[1..-1]]
+					versions.push replace(vname, template, parameters)
+				end
+			end
+
+			versions.each do |version|
+				# TODO: check for overwrites
+				all_versions[version[0]] = version[1]
+			end
+		end
+
 		# Create list of versions, organized by build
 		build_versions = Hash.new { |hash,key| hash[key] = {} }
-		config["versions"].each do |vname, version|
+		all_versions.each do |vname, version|
 			app = Experiment::Application.new(:wd => Dir.pwd + "/" + vname,
 								      :config => config,
 								      :version => version,
