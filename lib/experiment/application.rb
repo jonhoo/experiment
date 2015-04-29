@@ -75,16 +75,24 @@ module Experiment
 			t.terminate
 
 			finish = Time.now
-			if res.success?
+
+			ok = res.success?
+			if res.stopsig.to_i == 15 or res.exitstatus.to_i == 143
+				# SIGTERM is ok given that we sent it
+				ok = true
+			end
+
+			if ok
 				log.write finish.strftime("Finished at %s (%FT%T%:z)\n")
 			else
 				log.write sprintf(finish.strftime("Failed with %%s at %s (%FT%T%:z)\n"), res)
 			end
+
 			duration = finish - start
 			log.write "Took #{duration}s\n"
 			log.close
 
-			if not res.success?
+			if not ok
 				raise "process failed with #{res}"
 			end
 		end
