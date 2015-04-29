@@ -39,6 +39,21 @@ class TestTemplates < ExperimentTestCase
 		}
 	end
 
+	def test_vary_global_args
+		@e["arguments"] = ["$SRC/test", "$time"]
+		@e["versions"] = {
+			"sleep-$time" => {
+				"vary" => {"time" => "set(10, 20)"},
+			}
+		}
+		Dir.mktmpdir("test_", ".") {|d|
+			build d
+			experiment d
+			validate_run_dir(File.join(d, "out", "sleep-10", "run-1"))
+			validate_run_dir(File.join(d, "out", "sleep-20", "run-1"), 20)
+		}
+	end
+
 	def test_vary_range_args
 		@e["versions"] = {
 			"sleep-$time" => {

@@ -86,6 +86,13 @@ command :run do |c|
 					  config["repository"].gsub("~", Dir.home))
 		repo = Rugged::Repository.new(repository)
 
+		# Inherit global options
+		config["versions"].each do |vname, version|
+			config["versions"][vname]["arguments"] = (version["arguments"] || config["arguments"]).dup
+			config["versions"][vname]["build"] = (version["build"] || config["build"])
+			config["versions"][vname]["checkout"] = (version["checkout"] || config["checkout"])
+		end
+
 		# Expand version templates
 		all_versions = {}
 		config["versions"].each do |vname, template|

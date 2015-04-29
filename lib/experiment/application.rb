@@ -19,7 +19,7 @@ module Experiment
 			@config = options[:config]
 			@version = options[:version]
 			@repo = options[:repo]
-			@args = (@version["arguments"] || @config["arguments"]).dup
+			@args = @version["arguments"]
 			@args[0].sub!(/^~/, Dir.home)
 			@args.map! {|arg|
 				Experiment.substitute(
@@ -27,10 +27,7 @@ module Experiment
 					{"SRC" => File.join(@wd, "source")}
 				)
 			}
-			@build = Build.new(@repo,
-							   @version["build"] || @config["build"],
-							   @version["checkout"] || @config["checkout"],
-							   @version["diffs"])
+			@build = Build.new(@repo, @version["build"], @version["checkout"], @version["diffs"])
 		end
 
 		def copy_build(vname, dir)
