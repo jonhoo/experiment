@@ -68,6 +68,7 @@ command :run do |c|
 	c.option '-s', '--single VERSION', String, 'run only a single iteration of a single version'
 	c.option '-r', '--repository FILE', String, 'override location of source code'
 	c.option '-o', '--output DIR', String, 'override location of experiment output'
+	c.option '-l', '--list', 'list all versions and exit'
 	c.action do |args, options|
 		begin
 			config = Experiment::read_config Dir.pwd
@@ -106,6 +107,11 @@ command :run do |c|
 				# TODO: check for overwrites
 				all_versions[version[0]] = version[1]
 			end
+		end
+
+		if options.list
+			puts all_versions.keys
+			next
 		end
 
 		if options.single
