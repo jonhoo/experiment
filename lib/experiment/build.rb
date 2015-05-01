@@ -86,7 +86,7 @@ module Experiment
 			puts " -> Building application".yellow
 			if system(@command) != true
 				Dir.chdir pwd
-				raise $?
+				raise "#{$?}"
 			end
 
 			Dir.chdir pwd

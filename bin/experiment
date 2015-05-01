@@ -151,7 +151,7 @@ command :run do |c|
 						a.copy_build(vname, build_dir)
 					end
 				end
-			rescue Exception => e
+			rescue RuntimeError => e
 				STDERR.puts sprintf(" -> %s failed!", build).red
 				bad.push build
 			end
