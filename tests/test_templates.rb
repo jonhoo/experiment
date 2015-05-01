@@ -117,4 +117,23 @@ eos
 		}
 	end
 
+	def test_vary_dupe
+		@e["versions"] = {"$letter" => {"vary" => {"letter" => "set(a)", "number" => "set(1, 2)"}}}
+		Dir.mktmpdir("test_", ".") {|d|
+			build d
+			r = experiment_out d, false
+			assert_false r
+
+			assert_false(File.exist? File.join(d, "out"))
+
+			ls = []
+			File.open File.join(d, "stderr.log"), "r" do |f|
+				f.each_line do |line|
+					ls.push line
+				end
+			end
+			assert_include ls.join(), "Found multiple definitions for version a"
+		}
+	end
+
 end

@@ -70,7 +70,7 @@ eos
 		r = Kernel.system(exp, "--trace", "--output", File.join(dir, "out"), *args, :out=>File.join(dir, "stdout.log"), :err=>File.join(dir, "stderr.log"))
 		Dir.chdir here
 		if !r and showerr
-			File.open err, "r" do |f|
+			File.open File.join(dir, "stderr.log"), "r" do |f|
 				f.each_line do |line|
 					puts line
 				end

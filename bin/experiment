@@ -104,7 +104,9 @@ command :run do |c|
 			end
 
 			versions.each do |version|
-				# TODO: check for overwrites
+				if all_versions.include? version[0]
+					raise ArgumentError.new "Found multiple definitions for version #{version[0]}"
+				end
 				all_versions[version[0]] = version[1]
 			end
 		end
