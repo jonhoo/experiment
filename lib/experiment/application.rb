@@ -27,7 +27,7 @@ module Experiment
 					{"SRC" => File.join(@wd, "source")}
 				)
 			}
-			@build = Build.new(@repo, @version["build"], @version["checkout"], @version["diffs"])
+			@build = Build.new(@repo, @version["build"], @version["checkout"], @version["diffs"], @config)
 		end
 
 		def copy_build(vname, dir)

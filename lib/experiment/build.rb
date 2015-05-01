@@ -18,11 +18,12 @@ module Experiment
 		attr_reader :command
 		attr_reader :checkout
 		attr_reader :diffs
-		def initialize(repo, command, checkout, diffs)
+		def initialize(repo, command, checkout, diffs, config)
 			@repo = repo
 			@command = command
 			@checkout = checkout
 			@diffs = diffs || []
+			@config = config
 		end
 
 		def build(wd)
@@ -81,6 +82,22 @@ module Experiment
 					end
 				end
 				FileUtils.rmtree [".git", ".gitmodules"]
+			end
+
+			if @config.include? "preserve" and not @config["preserve"].empty?
+				puts " -> Copying preserved files".blue
+				for p in @config["preserve"]
+					from = File.join(@repo.workdir, p)
+					to = File.join('.', p)
+
+					if not File.exist? from
+						puts "  - #{p} skipped"
+						next
+					end
+					puts "  + #{p}".blue
+					FileUtils.mkdir_p File.dirname(to)
+					FileUtils.cp_r from, to
+				end
 			end
 
 			puts " -> Building application".yellow
