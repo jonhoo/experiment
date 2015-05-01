@@ -65,6 +65,7 @@ end
 command :run do |c|
 	c.syntax = 'experiment run'
 	c.summary = 'Run the experiments outlined in experiment.json'
+	c.option '-s', '--single VERSION', String, 'run only a single iteration of a single version'
 	c.option '-r', '--repository FILE', String, 'override location of source code'
 	c.option '-o', '--output DIR', String, 'override location of experiment output'
 	c.action do |args, options|
@@ -117,6 +118,16 @@ command :run do |c|
 				# TODO: check for overwrites
 				all_versions[version[0]] = version[1]
 			end
+		end
+
+		if options.single
+			if not all_versions.include? options.single
+				raise ArgumentError.new "Told to run unknown version #{options.single}"
+			end
+			v = all_versions[options.single]
+			all_versions.clear
+			all_versions[options.single] = v
+			config["iterations"] = 1
 		end
 
 		# Create list of versions, organized by build
