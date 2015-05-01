@@ -13,7 +13,7 @@ class TestErrors < ExperimentTestCase
 		Dir.mktmpdir("test_", ".") {|d|
 			build d
 			@e["build"] = "exit 1"
-			r = experiment d
+			r = experiment_out d, false
 			assert_false r
 
 			ls = []

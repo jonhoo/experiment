@@ -58,7 +58,7 @@ eos
 		return repo
 	end
 
-	def experiment(dir, *args)
+	def experiment_out(dir, showerr, *args)
 		dir = File.absolute_path dir
 		File.open File.join(dir, "experiment.json"), "w" do |f|
 			f.write(JSON.generate(@e))
@@ -69,8 +69,8 @@ eos
 		Dir.chdir dir
 		r = Kernel.system(exp, "--trace", "--output", File.join(dir, "out"), *args, :out=>File.join(dir, "stdout.log"), :err=>File.join(dir, "stderr.log"))
 		Dir.chdir here
-		if !r
-			File.open File.join(dir, "stderr.log"), "r" do |f|
+		if !r and showerr
+			File.open err, "r" do |f|
 				f.each_line do |line|
 					puts line
 				end
@@ -78,6 +78,10 @@ eos
 			puts $?
 		end
 		return r
+	end
+
+	def experiment(dir, *args)
+		return experiment_out(dir, true, *args)
 	end
 
 	def mkcommit(repo)
