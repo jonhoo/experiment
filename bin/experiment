@@ -75,18 +75,6 @@ command :run do |c|
 			raise ArgumentError.new er.message
 		end
 
-		if options.output
-			if File.exist? options.output
-				raise ArgumentError.new "Output directory #{options.output} already exists; exiting."
-			end
-			FileUtils.mkdir_p options.output
-			Dir.chdir options.output
-		end
-
-		repository = (options.repository ||
-					  config["repository"].gsub("~", Dir.home))
-		repo = Rugged::Repository.new(repository)
-
 		# Inherit global options
 		config["versions"].each do |vname, version|
 			config["versions"][vname]["arguments"] = (version["arguments"] || config["arguments"]).dup
@@ -129,6 +117,18 @@ command :run do |c|
 			all_versions[options.single] = v
 			config["iterations"] = 1
 		end
+
+		if options.output
+			if File.exist? options.output
+				raise ArgumentError.new "Output directory #{options.output} already exists; exiting."
+			end
+			FileUtils.mkdir_p options.output
+			Dir.chdir options.output
+		end
+
+		repository = (options.repository ||
+					  config["repository"].gsub("~", Dir.home))
+		repo = Rugged::Repository.new(repository)
 
 		# Create list of versions, organized by build
 		build_versions = Hash.new { |hash,key| hash[key] = {} }
