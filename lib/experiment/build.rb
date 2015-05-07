@@ -18,12 +18,13 @@ module Experiment
 		attr_reader :command
 		attr_reader :checkout
 		attr_reader :diffs
-		def initialize(repo, command, checkout, diffs, config)
+		def initialize(repo, version, config)
 			@repo = repo
-			@command = command
-			@checkout = checkout
-			@diffs = diffs || []
+			@command = version["build"]
+			@checkout = version["checkout"]
+			@diffs = version["diffs"] || []
 			@config = config
+			@version = version
 		end
 
 		def build(wd)
@@ -46,6 +47,15 @@ module Experiment
 				f.close
 			end
 			log.close
+
+			to = "source"
+			if @version['into']
+				to = File.join(to, @version['into'])
+			end
+			FileUtils.mkdir_p to
+
+			here = Dir.pwd
+			Dir.chdir to
 
 			puts "==> Preparing source for build of '#{@checkout}'".bold
 
@@ -96,6 +106,10 @@ module Experiment
 					FileUtils.cp_r from, to
 				end
 			end
+
+			# build should be run from source root
+			Dir.chdir here
+			Dir.chdir "source"
 
 			puts " -> Building application".yellow
 			if system(@command) != true

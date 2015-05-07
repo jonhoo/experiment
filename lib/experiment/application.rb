@@ -27,22 +27,14 @@ module Experiment
 					{"SRC" => File.join(@wd, "source")}
 				)
 			}
-			@build = Build.new(@repo, @version["build"], @version["checkout"], @version["diffs"], @config)
-		end
+			@build = Build.new(@repo, @version, @config) end
 
 		def copy_build(vname, dir)
 			if File.exist? @wd
 				raise "Version #{vname} directory already exists"
 			end
 
-			to = File.join(@wd, "source")
-
-			if @version['into']
-				to = File.join(to, @version['into'])
-			end
-
-			FileUtils.mkdir_p File.dirname(to)
-			FileUtils.cp_r dir, to
+			FileUtils.cp_r dir, @wd
 			puts "--> Source for version '#{vname}' ready".green
 		end
 

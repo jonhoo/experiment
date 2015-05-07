@@ -155,7 +155,12 @@ command :run do |c|
 		build_versions.each do |build, versions|
 			begin
 				Dir.mktmpdir do |build_dir|
-					build.build(build_dir)
+					begin
+						build.build(build_dir)
+					rescue RuntimeError => e
+						FileUtils.cp_r build_dir, "failed-build-#{bad.length+1}"
+						raise
+					end
 					versions.each do |vname, a|
 						a.copy_build(vname, build_dir)
 					end

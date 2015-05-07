@@ -142,7 +142,7 @@ options[:parents] = repo.empty? ? [] : [ repo.head.target ].compact
 			assert_true(experiment d)
 			assert_true(File.exist? File.join(d, "experiment.json"))
 			assert_true(File.directory? File.join(d, "out", "a"))
-			assert_true(File.exist? File.join(d, "out", "a", "source", "build.log"))
+			assert_true(File.exist? File.join(d, "out", "a", "build.log"))
 
 			assert_true(File.directory? File.join(d, "out", "a", "source"))
 			assert_true(File.exist? File.join(d, "out", "a", "source", "test.c"))
