@@ -47,9 +47,6 @@ module Experiment
 			end
 			log.close
 
-			Dir.mkdir "source"
-			Dir.chdir "source"
-
 			puts "==> Preparing source for build of '#{@checkout}'".bold
 
 			puts " -> Recreating source tree".blue

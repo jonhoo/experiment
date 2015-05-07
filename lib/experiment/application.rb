@@ -34,7 +34,15 @@ module Experiment
 			if File.exist? @wd
 				raise "Version #{vname} directory already exists"
 			end
-			FileUtils.cp_r dir, @wd
+
+			to = File.join(@wd, "source")
+
+			if @version['into']
+				to = File.join(to, @version['into'])
+			end
+
+			FileUtils.mkdir_p File.dirname(to)
+			FileUtils.cp_r dir, to
 			puts "--> Source for version '#{vname}' ready".green
 		end
 
