@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    experiment (0.6.1)
+    experiment (0.7.0)
       colorize (~> 0.7)
       commander (~> 4.2)
       ruby-progressbar (~> 1.5)
