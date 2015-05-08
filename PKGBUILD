@@ -27,8 +27,12 @@ package() {
   # the system, makepkg will exit with an error when sourcing the PKGBUILD.
   local _gemdir="$(ruby -rubygems -e'puts Gem.default_dir')"
 
-  gem install --no-user-install --ignore-dependencies -i "$pkgdir$_gemdir" -n "$pkgdir/usr/bin" \
-    "$_gemname-$pkgver.gem"
+  gem install \
+    --no-user-install \
+    --ignore-dependencies \
+    -i "$pkgdir$_gemdir" \
+    -n "$pkgdir/usr/bin" \
+    "${_gemname}-${pkgver}.gem"
 }
 
 # vim:set ts=2 sw=2 et:
