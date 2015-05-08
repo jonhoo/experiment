@@ -1,4 +1,5 @@
 # Maintainer: Jon Gjengset <jon@tsp.io>
+# Contributor: Andy Weidenbaum <archbaum@gmail.com>
 _gemname=experiment
 pkgname=$_gemname
 pkgver=0.7.1
@@ -7,8 +8,11 @@ pkgdesc="A tool for running concurrent multi-configuration experiments"
 arch=(any)
 url="https://github.com/jonhoo/experiment"
 license=('MIT')
-depends=(ruby) # Full dependency information is available in the yaml specification
-makedepends=(rubygems)
+depends=('ruby'
+         'ruby-colorize'
+         'ruby-commander'
+         'ruby-ruby-progressbar'
+         'ruby-rugged')
 source=($_gemname-${pkgver}.tar.gz::https://github.com/jonhoo/$_gemname/archive/v${pkgver}.tar.gz)
 md5sums=('SKIP')
 
