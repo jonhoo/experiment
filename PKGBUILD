@@ -13,6 +13,7 @@ depends=('ruby'
          'ruby-commander'
          'ruby-ruby-progressbar'
          'ruby-rugged')
+makedepends=('rubygems')
 source=(${_gemname}-${pkgver}.tar.gz::https://codeload.github.com/jonhoo/${_gemname}/tar.gz/v${pkgver})
 sha256sums=('cada825ca2026f3e9a65966f6db7b828787b06fb2813aff246ade938494a180e')
 
