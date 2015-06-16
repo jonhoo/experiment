@@ -25,9 +25,9 @@ program :version, Experiment::VERSION
 program :description, 'A tool for running concurrent multi-configuration experiments'
 
 def values(spec)
-	if spec =~ /^set\((.*)\)$/
+	if spec =~ /^set\((.*)\)$/m
 		return CSV.parse_line($1).map { |v| v.strip }
-	elsif spec =~ /^range\((.*)\)$/
+	elsif spec =~ /^range\((.*)\)$/m
 		args = $1.split(/\s*,\s*/).map { |v| to_numeric(v.strip) }
 		values = []
 		i = args[0]
@@ -36,7 +36,16 @@ def values(spec)
 			i += (args.length > 2 ? args[2] : 1)
 		end
 		return values
+	elsif spec =~ /^cmd(_[l])?\((.*)\)$/m
+		cmd = $1
+		out = `#{$2}`
+		if cmd == nil
+			return out.split(/\x00+/).reject { |c| c.empty? }
+		elsif cmd == "_l"
+			return out.split(/\n+/m).reject { |c| c.empty? }
+		end
 	end
+	raise ArgumentError.new sprintf("unknown template spec: %s", spec)
 end
 
 def replace(vname, template, parameters)

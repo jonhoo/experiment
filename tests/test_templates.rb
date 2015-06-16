@@ -70,6 +70,31 @@ class TestTemplates < ExperimentTestCase
 		}
 	end
 
+	def test_vary_cmd_l
+		@e["versions"] = {"$letter" => {"vary" => {"letter" => "cmd_l(echo -ne \"a\nb b\nc\")"}}}
+		Dir.mktmpdir("test_", ".") {|d|
+			build d
+			experiment d
+
+			validate_run_dir(File.join(d, "out", "a", "run-1"))
+			validate_run_dir(File.join(d, "out", "b b", "run-1"))
+			validate_run_dir(File.join(d, "out", "c", "run-1"))
+		}
+	end
+
+	def test_vary_cmd
+		@e["versions"] = {"$letter" => {"vary" => {"letter" => "cmd(find * -type f -print0)"}}}
+		Dir.mktmpdir("test_", ".") {|d|
+			build d
+			experiment d
+
+			validate_run_dir(File.join(d, "out", "test.c", "run-1"))
+			validate_run_dir(File.join(d, "out", "experiment.json", "run-1"))
+			validate_run_dir(File.join(d, "out", "stdout.log", "run-1"))
+			validate_run_dir(File.join(d, "out", "stderr.log", "run-1"))
+		}
+	end
+
 	def test_version_diffs
 		Dir.mktmpdir("test_", ".") {|d|
 			d = File.absolute_path d
