@@ -108,8 +108,11 @@ number less than `b`, starting at `a`, in increments of `c`.
 `cmd` is special in that it executes a shell command (using Ruby's
 [`system`](http://ruby-doc.org/core-2.2.0/Kernel.html#method-i-system)
 command), and expands into the values output by the command when run.
-There are two variants of this function: `cmd` and `cmd_l`. These differ
-only in what delimiter they use to distinguish different values in the
-output; `cmd` uses `\0`, whereas `cmd_l` uses newlines. **Authors should
-be careful about using `cmd_l`, as values containing newlines will be
-misinterpreted as multiple values.**
+The command is run in the same directory as `experiment` was called from
+(this is because templates are expanded before the repository has even been
+cloned, and so cannot refer to anything else). There are two variants of
+this function: `cmd` and `cmd_l`. These differ only in what delimiter
+they use to distinguish different values in the output; `cmd` uses `\0`,
+whereas `cmd_l` uses newlines. **Authors should be careful about using
+`cmd_l`, as values containing newlines will be misinterpreted as
+multiple values.**
