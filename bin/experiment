@@ -91,6 +91,7 @@ command :run do |c|
 			config["versions"][vname]["build"] = (version["build"] || config["build"])
 			config["versions"][vname]["checkout"] = (version["checkout"] || config["checkout"])
 			config["versions"][vname]["into"] = (version["into"] || config["into"])
+			config["versions"][vname]["diffs"] = (version["diffs"] || config["diffs"])
 		end
 
 		# Expand version templates
