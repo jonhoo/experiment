@@ -35,6 +35,7 @@ build       | string | Default command used to build the application under test 
 keep-stdout | bool   | If false or unset, application standard output is discarded. If true, it is kept in stdout.log.
 arguments   | array  | Default command and arguments to run the application with -- **not** passed to system shell. The special string `$SRC` will be replaced with the source code directory the current version was built from.
 into        | string | Copy the source tree into a subdirectory of the build directory (useful for e.g. Go packages)
+preserve    | string | Preserves dirty or unstaged changes to files or directories from the working directory
 versions    | hash   | Described below.
 
 The `versions` hash is where all the versions you want experiment to

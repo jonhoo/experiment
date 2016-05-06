@@ -71,9 +71,9 @@ module Experiment
 			end
 
 			if @config.include? "preserve" and not @config["preserve"].empty?
-				puts " -> Copying preserved files".blue
+				puts " -> Copying preserved dirty changes".blue
 				for p in @config["preserve"]
-					from = File.join(@repo.workdir, p)
+					from = File.expand_path(p, @repo.workdir)
 					to = File.join('.', p)
 
 					if not File.exist? from
