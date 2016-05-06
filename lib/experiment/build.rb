@@ -39,15 +39,6 @@ module Experiment
 			log.write "Parent commits: #{commit.parent_oids}\n"
 			log.write "Committed at: #{commit.time}\n"
 
-			# Add the text of the diffs to the build log
-			for p in @diffs do
-				log.write "\n"
-				f = File.open File.expand_path p
-				log.write f.read
-				f.close
-			end
-			log.close
-
 			to = "source"
 			if @version['into']
 				to = File.join(to, @version['into'])
@@ -61,18 +52,6 @@ module Experiment
 
 			puts " -> Recreating source tree".blue
 			Experiment::recreate_tree(@repo, commit)
-
-			if not @diffs.empty?
-				puts " -> Applying patches".cyan
-				for p in @diffs do
-					# git apply ...
-					puts "  - #{p}".cyan
-					if system("/usr/bin/patch", "-Np1", "-i", File.expand_path(p)).nil?
-						Dir.chdir pwd
-						raise "Patch " + p + " could not be applied"
-					end
-				end
-			end
 
 			if File.exists? ".gitmodules"
 				puts " -> Initializing submodules".magenta
@@ -110,6 +89,27 @@ module Experiment
 			# build should be run from source root
 			Dir.chdir here
 			Dir.chdir "source"
+
+			# Add the text of the diffs to the build log
+			for p in @diffs do
+				log.write "\n"
+				f = File.open File.expand_path(p)
+				log.write f.read
+				f.close
+			end
+			log.close
+
+			if not @diffs.empty?
+				puts " -> Applying patches".cyan
+				for p in @diffs do
+					# git apply ...
+					puts "  - #{p}".cyan
+					if system("/usr/bin/patch", "-Np1", "-i", File.expand_path(p)).nil?
+						Dir.chdir pwd
+						raise "Patch " + p + " could not be applied"
+					end
+				end
+			end
 
 			puts " -> Building application".yellow
 			if system(@command) != true
