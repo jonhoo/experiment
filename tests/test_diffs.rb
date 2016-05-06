@@ -25,7 +25,7 @@ class TestCheckout < ExperimentTestCase
 
 			@e["preserve"] = ["test.diff"]
 			@e["versions"] = {"a" => {}, "b" => {
-				"diffs": ["test.diff"],
+				"diffs" => ["test.diff"],
 			}}
 			experiment d
 			validate_run_dir(File.join(d, "out", "a", "run-1"))
